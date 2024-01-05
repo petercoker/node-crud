@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const connection = require('./db');
+
 
 const app = express(); // create express app
 app.use(bodyParser.json()); // parse json
@@ -11,13 +13,31 @@ let tweets = []
 app.get('/tweets', (req, res) => {
     res.send(JSON.stringify(tweets));
 })
+
+// Select the database
+connection.query('USE twitter', (err, result) => {
+    if (err) throw err;
+    console.log("Database selected");
+});
  
 app.post('/tweets', (req, res) => {
     // post tweets
     const tweetsRequests = req.body.text; // get the text from the body
-    console.log(tweetsRequests) ;
+    console.log(tweetsRequests);
     tweets.push(tweetsRequests);
-    res.send('POSTED TWEETS: tweets' + tweets);
+
+    const tweet = {
+        text: tweetsRequests,
+        user_id: '1'
+    }
+    connection.query('INSERT INTO tweets SET ?', tweet, (err, result, fields) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(result);
+        } 
+    })
+    res.send('POSTED TWEETS: tweets' + tweetsRequests);
 })
 
 app.put('/tweets', (req, res) => {
