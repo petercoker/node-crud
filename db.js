@@ -8,17 +8,26 @@ const connection = mysql2.createConnection({
 });
 
 try {
-    connection.connect((err) => {
-        if (err) {
-            console.error('Error connecting to the database:', err);
-            return;
-        }
-        // create a database if it doesn't exist
-        connection.query('CREATE DATABASE IF NOT EXISTS twitter', (err, result) => {
-            if (err) throw err;
-            console.log('Database created');
+    connection.query('USE twitter', (err, result) => {
+        if (err) throw err;
+        console.log("Database selected");
+    
+        // Create the 'tweets' table
+        const createTweetsTable = `
+            CREATE TABLE IF NOT EXISTS tweets (
+                id INT AUTO_INCREMENT,
+                text VARCHAR(255),
+                user_id VARCHAR(255),
+                PRIMARY KEY(id)
+            )
+        `;
+        connection.query(createTweetsTable, (err, results, fields) => {
+            if (err) {
+                console.error('Error creating the tweets table:', err);
+                return;
+            }
+            console.log('Tweets table created');
         });
-        console.log('Connected to the database');
     });
 } catch (err) {
     console.error('Error connecting to the database:', err);

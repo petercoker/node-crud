@@ -28,7 +28,6 @@ app.post('/tweets', (req, res) => {
 
     const tweet = {
         text: tweetsRequests,
-        user_id: '1'
     }
     connection.query('INSERT INTO tweets SET ?', tweet, (err, result, fields) => {
         if (err) {
@@ -36,6 +35,13 @@ app.post('/tweets', (req, res) => {
         } else {
             console.log(result);
         } 
+    })
+    connection.query('SELECT * FROM tweets', (err, result, fields) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(result);
+        }
     })
     res.send('POSTED TWEETS: tweets' + tweetsRequests);
 })
