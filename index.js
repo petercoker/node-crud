@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const connection = require('./db');
 
-
 const app = express(); // create express app
 app.use(bodyParser.json()); // parse json
 app.use(bodyParser.urlencoded({ extended: true })); // parse form data encoded in the url 
@@ -11,7 +10,14 @@ const port = 3000; // runs on port 3000
 let tweets = []
 // / is the base route
 app.get('/tweets', (req, res) => {
-    res.send(JSON.stringify(tweets));
+    connection.query('SELECT * FROM tweets', (err, result, fields) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("GET Successful. Number of Tweets: " + result);
+            res.send(JSON.stringify(result));
+        }
+    })
 })
 
 // Select the database
@@ -25,7 +31,6 @@ app.post('/tweets', (req, res) => {
     const tweetsRequests = req.body.text; // get the text from the body
     console.log(tweetsRequests);
     tweets.push(tweetsRequests);
-
     const tweet = {
         text: tweetsRequests,
     }
@@ -36,13 +41,7 @@ app.post('/tweets', (req, res) => {
             console.log(result);
         } 
     })
-    connection.query('SELECT * FROM tweets', (err, result, fields) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(result);
-        }
-    })
+    
     res.send('POSTED TWEETS: tweets' + tweetsRequests);
 })
 
