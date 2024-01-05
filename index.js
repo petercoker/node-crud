@@ -3,11 +3,13 @@ const bodyParser = require("body-parser");
 // const connection = require("./db");
 const Tweet = require("./seq"); // import the Tweet model
 const mysql = require("mysql2");
+const path = require("path");
 
 const app = express(); // create express app
 app.use(bodyParser.json()); // parse json
 app.use(bodyParser.urlencoded({ extended: true })); // parse form data encoded in the url
 const port = 3000; // runs on port 3000
+app.use(express.static("public")); // serve static files
 
 // create MYSQL connection
 const connection = mysql.createConnection({
@@ -18,6 +20,11 @@ const connection = mysql.createConnection({
 });
 
 let tweets = [];
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html")); // send the index.html file
+});
+
 // / is the base route
 app.get("/tweets", (req, res) => {
   // connection.query('SELECT * FROM tweets', (err, result, fields) => {
